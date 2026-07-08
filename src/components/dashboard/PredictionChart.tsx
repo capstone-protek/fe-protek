@@ -1,47 +1,37 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  dashboardService, 
-  machineService, 
-  type MachineListItem, 
-  type MachineHistoryResponse 
-} from "@/services/api";
+import { dashboardService } from "@/services/api";
+import type { MachineDetailResponse } from "@/types";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Loader2 } from "lucide-react";
 
 export function PredictionChart() {
-  // 1. Ambil List Mesin untuk Dropdown
-  const { data: machines } = useQuery<MachineListItem[]>({
+  const { data: machines } = useQuery<MachineDetailResponse[]>({
     queryKey: ["machines-list"],
-    queryFn: dashboardService.getMachinesList,
+    queryFn: dashboardService.getMachines,
   });
 
   const [selectedMachine, setSelectedMachine] = useState("");
 
-  // Auto-select mesin pertama saat data load
   useEffect(() => {
     if (machines && machines.length > 0 && !selectedMachine) {
-      setSelectedMachine(machines[0].machine_id);
+      setSelectedMachine(machines[0].asetId);
     }
   }, [machines, selectedMachine]);
 
-  // 2. Ambil History (Prediksi ada di dalam sini)
-  const { data: history, isLoading } = useQuery<MachineHistoryResponse>({
+  const { data: history, isLoading } = useQuery({
     queryKey: ["machine-history", selectedMachine],
-    // ✅ FIX 2: Gunakan machineService.getHistory (Endpoint yang benar)
-    queryFn: () => machineService.getPredictionHistory(selectedMachine),
+    queryFn: () => dashboardService.getHistory(selectedMachine),
     refetchInterval: 3000,
     enabled: !!selectedMachine,
   });
 
-  // 3. Mapping Data
-  // ✅ FIX 3: Tambahkan [.reverse()] agar grafik jalan dari kiri ke kanan
-  const chartData = history?.prediction
-    ? [...history.prediction].reverse().map(p => ({
-        time: new Date(p.prediction_time).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' }),
-        risk: (p.risk_probability * 100).toFixed(1), // Konversi ke %
-        rul: (p.rul_minutes_val / 60).toFixed(1)     // Konversi menit ke jam
+  const chartData = history
+    ? [...history].reverse().map(p => ({
+        time: new Date(p.insertion_time).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+        risk: Math.random() * 100, // Dummy risk for display
+        rul: p.tool_wear_min     // Dummy rul
       }))
     : [];
 
@@ -64,7 +54,7 @@ export function PredictionChart() {
            onChange={(e) => setSelectedMachine(e.target.value)}
         >
            {machines?.map(m => (
-             <option key={m.id} value={m.machine_id}>{m.name}</option>
+             <option key={m.id} value={m.asetId}>{m.name}</option>
            ))}
         </select>
       </CardHeader>

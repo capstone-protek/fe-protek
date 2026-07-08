@@ -1,15 +1,14 @@
-// frontend/src/services/api.ts
+// src/services/api.ts
 import axios from "axios";
 import type { 
-  DashboardSummaryResponse, 
   MachineDetailResponse, 
-  SensorHistoryData,
-  AlertData,
-  PredictPayload,
-  PredictResponseFE
+  PredictPayload
 } from "../types";
+import { mockDashboardSummary, mockAlerts, healthTrendData, mockMachines, mockSensorData } from "../data/mockData";
 
-// Gunakan URL Railway Anda jika di production, atau localhost saat dev
+// Helper sederhana untuk delay buatan (mock latency)
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const API_URL = import.meta.env.VITE_API_URL || "https://api-protek-production.up.railway.app/api";
 
 const api = axios.create({
@@ -18,8 +17,6 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-// --- INTERFACES (Di-export agar bisa dipakai di Komponen) ---
 
 export interface SimulationResponse {
   status: "success" | "error";
@@ -52,86 +49,85 @@ export interface ChatResponse {
 // --- SERVICES ---
 
 export const simulationService = {
-  // 1. Start Simulasi
   start: async () => {
-    const response = await api.post<SimulationResponse>("/simulation/start");
-    return response.data;
+    await delay(500);
+    return { status: "success", message: "Simulasi dimulai", is_running: true };
   },
-
-  // 2. Stop Simulasi
   stop: async () => {
-    // Menggunakan GET sesuai controller backend Anda saat ini
-    const response = await api.get<SimulationResponse>("/simulation/stop");
-    return response.data;
+    await delay(500);
+    return { status: "success", message: "Simulasi dihentikan", is_running: false };
   },
-
-  // 3. Cek Status (Untuk tombol Start/Stop)
   getStatus: async () => {
-    const response = await api.get<{ is_running: boolean }>("/simulation/status");
-    return response.data;
+    await delay(200);
+    return { is_running: false };
   }
 };
 
 export const dashboardService = {
   getSummary: async () => {
-    const response = await api.get<DashboardSummaryResponse>("/dashboard/summary");
-    return response.data;
+    await delay(500);
+    return mockDashboardSummary;
   },
 
   getTrend: async () => {
-    const response = await api.get<TrendDataPoint[]>("/dashboard/trend");
-    return response.data;
+    await delay(300);
+    return healthTrendData;
   },
 
   getMachines: async () => {
-    const response = await api.get<MachineDetailResponse[]>("/machines");
-    return response.data;
+    await delay(300);
+    return mockMachines as MachineDetailResponse[];
   },
 
   getMachineDetail: async (asetId: string) => {
-    const response = await api.get<MachineDetailResponse>(`/machines/${asetId}`);
-    return response.data;
+    await delay(300);
+    return mockMachines.find(m => m.asetId === asetId) || mockMachines[0];
   },
 
-  // --- FIX PENTING: Menambahkan getSensors ---
-  // Ini diperlukan oleh MachineHealthChart.tsx
-  getSensors: async (asetId: string) => {
-    // Mengambil data history sensor untuk grafik realtime
-    const response = await api.get<SensorHistoryData[]>(`/machines/${asetId}/history`);
-    return response.data;
+  getSensors: async (_asetId: string) => {
+    await delay(300);
+    return mockSensorData;
   },
 
-  // Method baru untuk mengambil data dari tabel sensor_data
-  getSensorData: async (asetId: string) => {
-    const response = await api.get(`/sensor-data/machine/${asetId}`);
-    return response.data;
+  getSensorData: async (_asetId: string) => {
+    await delay(300);
+    return mockSensorData;
   },
 
-  getHistory: async (asetId: string) => {
-    const response = await api.get<SensorHistoryData[]>(`/machines/${asetId}/history`);
-    return response.data;
+  getHistory: async (_asetId: string) => {
+    await delay(300);
+    return mockSensorData;
   },
 
   getAlerts: async () => {
-    const response = await api.get<{ alerts: AlertData[] } | AlertData[]>(`/alerts`);
-    const data = response.data;
-    // Handle format { alerts: [...] } atau array langsung [...]
-    return Array.isArray(data) ? data : data.alerts;
+    await delay(300);
+    return mockAlerts;
   },
 
   getAlertDetail: async (alertId: number) => {
-    const response = await api.get<AlertData>(`/alerts/${alertId}`);
-    return response.data;
+    await delay(300);
+    return mockAlerts.find(a => a.id === alertId) || mockAlerts[0];
   },
 
   getPredict: async (payload: PredictPayload) => {
-    const response = await api.post<PredictResponseFE>(`/predict`, payload);
-    return response.data;
+    await delay(800);
+    return {
+      status: 'success',
+      input_saved: true,
+      ml_result: {
+        Machine_ID: payload.Machine_ID,
+        Risk_Probability: "85.2%",
+        RUL_Estimate: "2 Jam Lagi",
+        RUL_Status: "🚨 CRITICAL",
+        RUL_Minutes: "120",
+        Status: "⚠️ CRITICAL FAILURE DETECTED"
+      }
+    };
   },
 
-  sendMessage: async (message: string) => {
-    const response = await api.post<ChatResponse>('/chat', { message });
-    return response.data;
+  sendMessage: async (_message: string) => {
+    await delay(500);
+    return { reply: "Ini adalah balasan dummy karena belum ada API Chat." };
   }
 };
 

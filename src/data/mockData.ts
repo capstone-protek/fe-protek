@@ -1,129 +1,78 @@
-/**
- * Mock Data untuk Frontend
- *
- * File ini digunakan untuk development/testing
- * Pada production, data akan diambil dari API Backend
- */
-import type {
-  AlertData,
-  DashboardSummaryResponse,
-  MachineDetailResponse,
-  MachineStatus,
-} from "@/types";
+// src/data/mockData.ts
+import type { AlertData, DashboardSummaryResponse, MachineDetailResponse, SensorDataPoint } from "@/types";
 
 export const mockAlerts: AlertData[] = [
   {
-    id: "alert-001",
-    asetId: "M-14850",
+    id: 1,
+    message: "Tool Wear Failure",
+    severity: "CRITICAL",
     timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    diagnosis: "Tool Wear Failure",
-    probabilitas: 0.95,
-    priority: "KRITIS",
-    sensorDataTerkait: {
-      airTemp: 35.2,
-      processTemp: 52.1,
-      rpm: 1500,
-      torque: 42.5,
-      toolWear: 240.8,
-    },
+    machine: {
+      name: "CNC Grinder 01",
+      asetId: "M-14850",
+    }
   },
   {
-    alertId: "alert-002",
-    asetId: "M-15200",
+    id: 2,
+    message: "Overheat",
+    severity: "WARNING",
     timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-    diagnosis: "Overheat",
-    probabilitas: 0.78,
-    priority: "TINGGI",
-    sensorDataTerkait: {
-      airTemp: 38.5,
-      processTemp: 65.3,
-      rpm: 1800,
-      torque: 38.2,
-      toolWear: 120.5,
-    },
-  },
-  {
-    id: "alert-003",
-    asetId: "M-14900",
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    diagnosis: "Power Loss",
-    probabilitas: 0.45,
-    priority: "SEDANG",
-    sensorDataTerkait: {
-      airTemp: 32.1,
-      processTemp: 48.5,
-      rpm: 1200,
-      torque: 35.8,
-      toolWear: 98.3,
-    },
+    machine: {
+      name: "Lathe Machine 02",
+      asetId: "M-15200",
+    }
   },
 ];
 
 export const mockDashboardSummary: DashboardSummaryResponse = {
-  totalMachines: 25,
-  criticalAlertsCount: 3,
-  offlineMachinesCount: 1,
-  recentCriticalAlerts: mockAlerts.filter((a) => a.priority === "KRITIS"),
+  summary: {
+    totalMachines: 25,
+    criticalMachines: 2,
+    todaysAlerts: 5,
+    systemHealth: 85,
+  },
+  recentAlerts: mockAlerts,
 };
 
-export const mockMachines: mach[] = [
+export const mockMachines: MachineDetailResponse[] = [
   {
+    id: 1,
     asetId: "M-14850",
     name: "CNC Grinder 01",
     status: "CRITICAL",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
+    id: 2,
     asetId: "M-15200",
     name: "Lathe Machine 02",
     status: "WARNING",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
+    id: 3,
     asetId: "M-14900",
     name: "Drill Press 03",
     status: "HEALTHY",
-  },
-  {
-    asetId: "M-15500",
-    name: "Milling Machine 04",
-    status: "HEALTHY",
-  },
-  {
-    asetId: "M-16100",
-    name: "Assembly Robot 05",
-    status: "OFFLINE",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];
 
-export const mockMachineDetails: Record<string, MachineDetails> = {
-  "M-14850": {
-    asetId: "M-14850",
-    name: "CNC Grinder 01",
-    status: "CRITICAL",
-    lastReading: {
-      timestamp: new Date().toISOString(),
-      airTemp: 35.2,
-      processTemp: 52.1,
-      rpm: 1500,
-      torque: 42.5,
-      toolWear: 240.8,
-    },
-  },
-  "M-15200": {
-    asetId: "M-15200",
-    name: "Lathe Machine 02",
-    status: "WARNING",
-    lastReading: {
-      timestamp: new Date().toISOString(),
-      airTemp: 38.5,
-      processTemp: 65.3,
-      rpm: 1800,
-      torque: 38.2,
-      toolWear: 120.5,
-    },
-  },
-};
+export const mockSensorData: SensorDataPoint[] = Array.from({ length: 20 }).map((_, i) => ({
+  id: i,
+  machine_id: 1,
+  type: "sensor",
+  air_temperature_K: 298 + Math.random() * 5,
+  process_temperature_K: 308 + Math.random() * 10,
+  rotational_speed_rpm: 1500 + Math.random() * 100,
+  torque_Nm: 40 + Math.random() * 10,
+  tool_wear_min: 120 + Math.random() * 20,
+  insertion_time: new Date(Date.now() - (20 - i) * 5000).toISOString(),
+}));
 
-// Simple health trend data for charts
 export const healthTrendData = [
   { time: '00:00', value: 80 },
   { time: '04:00', value: 78 },
@@ -132,13 +81,3 @@ export const healthTrendData = [
   { time: '16:00', value: 65 },
   { time: '20:00', value: 60 },
 ];
-
-// Maintenance history (sample)
-export const maintenanceHistory: { id: string; machineId: string; date: string; type: string; description: string }[] = [];
-
-// Export untuk backward compatibility
-export const alerts = mockAlerts;
-export const dashboardStats = mockDashboardSummary;
-export const machines = mockMachines;
-
-export type { Alert, DashboardSummary, MachineSummary, MachineDetails };

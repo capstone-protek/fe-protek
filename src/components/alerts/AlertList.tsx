@@ -56,7 +56,7 @@ export function AlertList() {
         // Backend mengembalikan { alerts: [...] } atau array langsung
         const alertsArray = Array.isArray(data) 
           ? data 
-          : (data as data)?.alerts || [];
+          : (data as any)?.alerts || [];
         setAlerts(alertsArray);
       })
       .catch((error) => {
@@ -70,15 +70,14 @@ export function AlertList() {
 
   const filteredAlerts = alerts
     .filter((alert) => {
-      // ✅ FIX: Gunakan machine_id dan optional chaining
       const machineName = alert.machine?.name || "";
-      const machineId = alert.machine_id || "";
+      const machineId = alert.machine?.asetId || "";
       const message = alert.message || "";
 
       const matchesSearch =
-        alert.machine.asetId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        alert.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        alert.machine.name.toLowerCase().includes(searchQuery.toLowerCase());
+        machineId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        machineName.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesSeverity =
         severityFilter === "all" || alert.severity === severityFilter;

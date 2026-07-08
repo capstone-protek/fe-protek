@@ -1,47 +1,69 @@
 // src/lib/api.ts
+import { mockDashboardSummary, mockAlerts, mockMachines, mockSensorData } from "../data/mockData";
 
-const API_BASE = 'http://localhost:4000/api';
-
-// Helper sederhana untuk fetch
-async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
-  try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      headers: { 'Content-Type': 'application/json' },
-      ...options,
-    });
-
-    if (!response.ok) {
-      console.warn(`API Error [${endpoint}]: ${response.status}`);
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(`Network Error [${endpoint}]:`, error);
-    return null;
-  }
-}
+// Helper sederhana untuk delay buatan (mock latency)
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const api = {
   // --- DASHBOARD ---
-  getStats: () => fetchAPI<any>('/dashboard/stats'),
-  getDashboardAlerts: () => fetchAPI<any[]>('/dashboard/alerts'),
-  getChartHistory: (machineId: string) => fetchAPI<any[]>(`/dashboard/chart-history?machineId=${machineId}`),
-  getChartLatest: (machineId: string) => fetchAPI<any>(`/dashboard/chart-latest?machineId=${machineId}`),
+  getStats: async () => {
+    await delay(500);
+    return mockDashboardSummary;
+  },
+  getDashboardAlerts: async () => {
+    await delay(300);
+    return mockAlerts;
+  },
+  getMachineHistory: async (machineId: string) => {
+    console.log(`Getting history for ${machineId}`);
+    return mockSensorData;
+  },
+
+  getMachineDetail: async (machineId: string) => {
+    console.log(`Getting details for ${machineId}`);
+    return mockMachines.find(m => m.asetId === machineId) || mockMachines[0];
+  },
 
   // --- MACHINES ---
-  getMachines: () => fetchAPI<any[]>('/machines'),
+  getMachines: async () => {
+    await delay(300);
+    return mockMachines;
+  },
   
   // --- ALERTS ---
-  getAlerts: () => fetchAPI<any[]>('/alerts'),
+  getAlerts: async () => {
+    await delay(300);
+    return mockAlerts;
+  },
 
   // --- PREDICTION ---
-  predict: (data: any) => fetchAPI<any>('/predict', { 
-    method: 'POST', 
-    body: JSON.stringify(data) 
-  }),
+  predict: async (data: any) => {
+    await delay(800);
+    return {
+      status: 'success',
+      input_saved: true,
+      ml_result: {
+        Machine_ID: data?.Machine_ID || "M-UNKNOWN",
+        Risk_Probability: "85.2%",
+        RUL_Estimate: "2 Jam Lagi",
+        RUL_Status: "🚨 CRITICAL",
+        RUL_Minutes: "120",
+        Status: "⚠️ CRITICAL FAILURE DETECTED"
+      }
+    };
+  },
 
   // --- SIMULATION ---
-  startSimulation: () => fetchAPI('/simulation/start', { method: 'POST' }),
-  stopSimulation: () => fetchAPI('/simulation/stop'), 
-  getSimulationStatus: () => fetchAPI<any>('/simulation/status'),
+  startSimulation: async () => {
+    await delay(500);
+    return { status: "success", message: "Simulation started", is_running: true };
+  },
+  stopSimulation: async () => {
+    await delay(500);
+    return { status: "success", message: "Simulation stopped", is_running: false };
+  }, 
+  getSimulationStatus: async () => {
+    await delay(200);
+    return { is_running: false };
+  },
 };

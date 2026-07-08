@@ -7,7 +7,7 @@ export function useSimulation() {
   const [simulationStatus, setSimulationStatus] = useState<string>('idle');
 
   const checkStatus = useCallback(async () => {
-    const data = await api.getSimulationStatus();
+    const data = await api.getSimulationStatus() as any;
     if (data) {
       setSimulationStatus(data.status || 'unknown');
       
