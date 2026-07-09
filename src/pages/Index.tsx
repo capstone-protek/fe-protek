@@ -7,6 +7,7 @@ import { SimulationControl } from "@/components/dashboard/SimulationControl";
 import { MachineHealthChart } from "@/components/dashboard/MachineHealthChart";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { api } from "@/lib/api";
+import { MachineStatusGrid } from "@/components/dashboard/MachineStatusGrid";
 
 const Index = () => {
   const { data, isLoading, isError } = useQuery({
@@ -17,7 +18,7 @@ const Index = () => {
       console.log("Full Dashboard Data:", response); // Cek console untuk memastikan
       return response;
     },
-    refetchInterval: 3000, 
+    refetchInterval: 3000,
   });
 
   if (isLoading) {
@@ -45,11 +46,11 @@ const Index = () => {
   }
 
   // Fallback data jika backend mengirim null/undefined
-  const summary = data.summary || { 
-    totalMachines: 0, 
-    todaysAlerts: 0, 
-    criticalMachines: 0, 
-    systemHealth: 0 
+  const summary = data.summary || {
+    totalMachines: 0,
+    todaysAlerts: 0,
+    criticalMachines: 0,
+    systemHealth: 0
   };
 
   const recentAlerts = data.recentAlerts || [];
@@ -68,7 +69,7 @@ const Index = () => {
         </div>
 
         <div className="flex items-center gap-4">
-           <SimulationControl />
+          <SimulationControl />
         </div>
       </div>
 
@@ -99,19 +100,24 @@ const Index = () => {
           variant={summary.systemHealth < 70 ? "danger" : "success"}
         />
       </div>
-      
+
       {/* Charts & Tables */}
       <div className="grid lg:grid-cols-7 gap-6 mb-8">
         <div className="lg:col-span-4">
           <MachineHealthChart />
         </div>
-        
+
         <div className="lg:col-span-3">
-           <RecentAlertsTable data={recentAlerts} /> 
+          <RecentAlertsTable data={recentAlerts} />
         </div>
       </div>
 
-      <ChatWidget/>
+      {/* Machine Status Grid */}
+      <div className="mb-8">
+        <MachineStatusGrid />
+      </div>
+
+      <ChatWidget />
     </AppLayout>
   );
 };
