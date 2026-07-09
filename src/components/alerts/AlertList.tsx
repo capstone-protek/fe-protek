@@ -71,6 +71,7 @@ export function AlertList() {
   const filteredAlerts = alerts
     .filter((alert) => {
       const machineName = alert.machine?.name || "";
+      // Using asetId instead of machine_id as defined in AlertData
       const machineId = alert.machine?.asetId || "";
       const message = alert.message || "";
 
