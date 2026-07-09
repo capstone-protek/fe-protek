@@ -19,8 +19,8 @@ const statusConfig: Record<string, { icon: typeof AlertTriangle; label: string; 
 };
 
 export function MachineDetail() {
-  const { id } = useParams<{ id: string }>();
-  const machineId = id || "";
+  const { asetId } = useParams<{ asetId: string }>();
+  const machineId = asetId || "";
 
   const { data: machine, isLoading: isLoadingDetail } = useQuery({
     queryKey: ['machine-detail', machineId],

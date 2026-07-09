@@ -5,9 +5,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentAlertsTable } from "@/components/dashboard/RecentAlertsTable";
 import { SimulationControl } from "@/components/dashboard/SimulationControl";
 import { MachineHealthChart } from "@/components/dashboard/MachineHealthChart";
-import { ChatWidget } from "@/components/chat/ChatWidget";
 import { api } from "@/lib/api";
-import { MachineStatusGrid } from "@/components/dashboard/MachineStatusGrid";
 
 const Index = () => {
   const { data, isLoading, isError } = useQuery({
@@ -111,13 +109,6 @@ const Index = () => {
           <RecentAlertsTable data={recentAlerts} />
         </div>
       </div>
-
-      {/* Machine Status Grid */}
-      <div className="mb-8">
-        <MachineStatusGrid />
-      </div>
-
-      <ChatWidget />
     </AppLayout>
   );
 };
