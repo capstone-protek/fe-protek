@@ -5,14 +5,14 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentAlertsTable } from "@/components/dashboard/RecentAlertsTable";
 import { SimulationControl } from "@/components/dashboard/SimulationControl";
 import { MachineHealthChart } from "@/components/dashboard/MachineHealthChart";
-import { api } from "@/lib/api";
+import { dashboardService } from "@/services/api";
 
 const Index = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: async () => {
       // Backend Anda ternyata mengembalikan paket lengkap di endpoint ini
-      const response = await api.getStats();
+      const response = await dashboardService.getSummary();
       console.log("Full Dashboard Data:", response); // Cek console untuk memastikan
       return response;
     },

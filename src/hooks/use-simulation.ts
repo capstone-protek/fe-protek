@@ -1,30 +1,35 @@
 // src/hooks/use-simulation.ts
 import { useState, useEffect, useCallback } from 'react';
-import { api } from '../lib/api'; // Import dari file api yang baru kita buat
+import { simulationService } from '../services/api';
 
 export function useSimulation() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationStatus, setSimulationStatus] = useState<string>('idle');
 
   const checkStatus = useCallback(async () => {
-    const data = await api.getSimulationStatus() as any;
-    if (data) {
-      setSimulationStatus(data.status || 'unknown');
-      
-      if (data.status === 'running' && !isSimulating) setIsSimulating(true);
-      if (data.status !== 'running' && isSimulating) setIsSimulating(false);
+    try {
+      const data = await simulationService.getStatus();
+      if (data) {
+        setSimulationStatus(data.message || 'unknown');
+        
+        if (data.is_running && !isSimulating) setIsSimulating(true);
+        if (!data.is_running && isSimulating) setIsSimulating(false);
+      }
+    } catch (error) {
+      console.error("Error checking simulation status:", error);
+      if (isSimulating) setIsSimulating(false);
     }
   }, [isSimulating]);
 
   const startSimulation = async () => {
     setIsSimulating(true);
-    await api.startSimulation();
+    await simulationService.start();
     checkStatus(); 
   };
 
   const stopSimulation = async () => {
     setIsSimulating(false);
-    await api.stopSimulation();
+    await simulationService.stop();
     checkStatus(); 
   };
 
