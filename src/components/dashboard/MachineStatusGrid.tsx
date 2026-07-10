@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "@/services/api";
-import type { MachineStatus, MachineDetailResponse } from "@/types";
+import type { MachineDetailResponse } from "@/types";
 import { cn } from "@/lib/utils";
 
 // Define status config locally to avoid import issues
@@ -88,8 +88,8 @@ export function MachineStatusGrid() {
 
             return (
               <Link
-                key={machine.id} // Use ID as key
-                to={`/machine/${machine.machine_id}`} // Use machine_id for URL
+                key={machine.id} 
+                to={`/machine/${machine.asetId}`} 
                 className="block group"
               >
                 <Card className="hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer border-l-4 border-2 rounded-lg"
@@ -111,7 +111,7 @@ export function MachineStatusGrid() {
                           {machine.name}
                         </h4>
                         <p className="text-xs text-muted-foreground">
-                          {machine.machine_id} {/* Corrected: machine_id */}
+                          {machine.asetId} 
                         </p>
                       </div>
                       <StatusIcon className={cn("h-5 w-5", status.className)} />

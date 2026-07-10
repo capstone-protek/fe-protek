@@ -41,6 +41,7 @@ export function ChatInterface() {
   });
 
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // --- BARU: Save to LocalStorage ---
@@ -78,7 +79,6 @@ export function ChatInterface() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-  };
 
     try {
       const data = await dashboardService.sendMessage(query);

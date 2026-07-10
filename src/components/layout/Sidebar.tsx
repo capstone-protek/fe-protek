@@ -2,7 +2,6 @@ import { NavLink, Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   AlertTriangle, 
-  Settings, 
   Activity, 
   MessageSquare, 
   HelpCircle,
@@ -12,11 +11,6 @@ import {
 import { cn } from "@/lib/utils";
 import logo from "@/assets/protek-logo.svg";
 import { Button } from "@/components/ui/button";
-
-interface SidebarProps {
-  isCollapsed: boolean;
-  toggleSidebar: () => void;
-}
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -58,7 +52,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
 
       {/* NAVIGATION ITEMS */}
       <nav className="flex-1 flex flex-col gap-1 px-3 py-6 overflow-x-hidden">
-        {navigation.map((item) => (
+        {mainNavigation.map((item) => (
           <NavLink
             key={item.name}
             to={item.href}

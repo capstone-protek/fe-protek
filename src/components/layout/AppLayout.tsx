@@ -1,15 +1,18 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
 import { Search, Bell } from "lucide-react"; // Icon tambahan
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const location = useLocation();
   // State Sidebar
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -29,7 +32,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     // Wrapper Utama: Background sedikit abu-abu agar Sidebar (Putih) terlihat menonjol ("Pop")
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 flex font-sans text-foreground">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 flex font-sans text-foreground relative">
       
       {/* 1. SIDEBAR (Fixed Position) */}
       <Sidebar 
@@ -78,6 +81,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
 
+      {location.pathname !== "/chat" && <ChatWidget />}
     </div>
   );
 }

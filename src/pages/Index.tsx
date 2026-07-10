@@ -2,22 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { Activity, AlertTriangle, Wrench, ShieldCheck } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { PredictionChart } from "@/components/dashboard/PredictionChart"; 
 import { RecentAlertsTable } from "@/components/dashboard/RecentAlertsTable";
 import { SimulationControl } from "@/components/dashboard/SimulationControl";
-import { ChatWidget } from "@/components/chat/ChatWidget";
-import { api } from "@/lib/api";
+import { MachineHealthChart } from "@/components/dashboard/MachineHealthChart";
+import { dashboardService } from "@/services/api";
 
 const Index = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: async () => {
       // Backend Anda ternyata mengembalikan paket lengkap di endpoint ini
-      const response = await api.getStats();
+      const response = await dashboardService.getSummary();
       console.log("Full Dashboard Data:", response); // Cek console untuk memastikan
       return response;
     },
-    refetchInterval: 3000, 
+    refetchInterval: 3000,
   });
 
   if (isLoading) {
@@ -45,11 +44,11 @@ const Index = () => {
   }
 
   // Fallback data jika backend mengirim null/undefined
-  const summary = data.summary || { 
-    totalMachines: 0, 
-    todaysAlerts: 0, 
-    criticalMachines: 0, 
-    systemHealth: 0 
+  const summary = data.summary || {
+    totalMachines: 0,
+    todaysAlerts: 0,
+    criticalMachines: 0,
+    systemHealth: 0
   };
 
   const recentAlerts = data.recentAlerts || [];
@@ -68,7 +67,7 @@ const Index = () => {
         </div>
 
         <div className="flex items-center gap-4">
-           <SimulationControl />
+          <SimulationControl />
         </div>
       </div>
 
@@ -99,19 +98,17 @@ const Index = () => {
           variant={summary.systemHealth < 70 ? "danger" : "success"}
         />
       </div>
-      
+
       {/* Charts & Tables */}
       <div className="grid lg:grid-cols-7 gap-6 mb-8">
         <div className="lg:col-span-4">
           <MachineHealthChart />
         </div>
-        
+
         <div className="lg:col-span-3">
-           <RecentAlertsTable data={recentAlerts} /> 
+          <RecentAlertsTable data={recentAlerts} />
         </div>
       </div>
-
-      <ChatWidget/>
     </AppLayout>
   );
 };
