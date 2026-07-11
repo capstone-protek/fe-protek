@@ -4,7 +4,7 @@ import type {
   MachineDetailResponse, 
   PredictPayload
 } from "../types";
-import { healthTrendData, mockSensorData } from "../data/mockData";
+import { healthTrendData } from "../data/mockData";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://be-protek-production.up.railway.app/api";
 
