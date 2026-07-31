@@ -13,7 +13,7 @@ interface Message {
   timestamp: string; // Ubah ke string biar aman di JSON
 }
 
-const STORAGE_KEY = "protek_chat_history"; // Key untuk localStorage
+const STORAGE_KEY = "protek_chat_widget_history";
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +25,11 @@ export function ChatWidget() {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        try {
+          return JSON.parse(saved);
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
     }
     // Default welcome message
@@ -81,7 +85,7 @@ export function ChatWidget() {
       const botMsg: Message = { 
         id: Date.now() + 1, 
         role: 'bot', 
-        text: data.reply,
+        text: data.response_text,
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, botMsg]);

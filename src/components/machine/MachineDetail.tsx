@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { dashboardService } from "@/services/api";
-import { mockAlerts as alerts } from "@/data/mockData";
 import type { AlertData } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -35,14 +34,21 @@ export function MachineDetail() {
     refetchInterval: 5000,
   });
 
+  const { data: alerts = [], isLoading: isLoadingAlerts } = useQuery<AlertData[]>({
+    queryKey: ['machine-alerts', machineId],
+    queryFn: () => dashboardService.getAlerts(),
+    enabled: !!machineId,
+    refetchInterval: 5000,
+  });
+
   const latestReading = useMemo(() => {
     if (!sensorHistoryData || sensorHistoryData.length === 0) return null;
-    return sensorHistoryData[0];
+    return sensorHistoryData[sensorHistoryData.length - 1];
   }, [sensorHistoryData]);
 
   const chartData = useMemo(() => {
     if (!sensorHistoryData || sensorHistoryData.length === 0) return [];
-    return [...sensorHistoryData].reverse().map(d => ({
+    return sensorHistoryData.map(d => ({
       time: new Date(d.insertion_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       temp: d.air_temperature_K,
       process: d.process_temperature_K,
@@ -217,7 +223,9 @@ export function MachineDetail() {
             <CardTitle className="text-lg">Active Alerts</CardTitle>
           </CardHeader>
           <CardContent>
-            {machineAlerts.length > 0 ? (
+            {isLoadingAlerts ? (
+              <p className="text-sm text-muted-foreground">Loading alerts...</p>
+            ) : machineAlerts.length > 0 ? (
               <div className="space-y-3">
                 {machineAlerts.map((alert: AlertData) => (
                   <div key={alert.id} className="p-3 rounded-lg border bg-muted/30">

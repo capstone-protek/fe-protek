@@ -1,14 +1,14 @@
 /*
  * ==========================================================
- * KONTRAK API FINAL (RAILWAY - SAFETY PATCH)
+ * ACTIVE FRONTEND DATA CONTRACTS
  * ==========================================================
- * Update: Menyesuaikan fakta bahwa beberapa field ML API
- * bisa hilang tergantung kondisi (Normal vs Critical).
+ * Public boundary fields intentionally retain the casing used by the
+ * currently deployed backend compatibility layer.
  * ==========================================================
  */
 
 // ==========================================================
-// 1. INPUT DATA (MATCHING SWAGGER IMAGE_B2DE81)
+// 1. PREDICTION REQUEST (LEGACY PASCALCASE, STILL ACCEPTED BY BACKEND)
 // ==========================================================
 
 export interface PredictPayload {
@@ -22,28 +22,29 @@ export interface PredictPayload {
 }
 
 // ==========================================================
-// 2. OUTPUT DATA (MATCHING POSTMAN)
+// 2. PREDICTION DATA RETURNED BY THE BACKEND
 // ==========================================================
 
-export interface MLResponse {
-  Machine_ID: string;
+export interface PredictionData {
+  machineId: string;
   
   // Data Statistik (Selalu ada berupa String)
-  Risk_Probability: string; // "78.3%"
-  RUL_Estimate: string;     // "0 Menit Lagi"
-  RUL_Status: string;       // "🚨 CRITICAL"
-  RUL_Minutes: string;      // "0"
-  Status: string;           // "⚠️ CRITICAL FAILURE DETECTED"
+  riskProbability: string; // "78.3%"
+  rulEstimate: string;     // "0 Menit Lagi"
+  rulStatus: string;       // "🚨 CRITICAL"
+  rulMinutes: string;      // "0"
+  status: string;          // "⚠️ CRITICAL FAILURE DETECTED"
 
   // Field Opsional (Tergantung Normal vs Critical)
   // Di screenshot 'Critical', Message & Recommendation TIDAK MUNCUL.
-  Message?: string;         
-  Recommendation?: string;  
+  message?: string;
+  recommendation?: string;
 
   // Field Tambahan saat Failure
-  Failure_Type?: string;    // "Power Failure"
-  Action?: string;          // "Cek tegangan..."
-  Urgency?: string;         // "🚨 SANGAT MENDESAK..."
+  failureType?: string;    // "Power Failure"
+  action?: string;         // "Cek tegangan..."
+  urgency?: string;        // "🚨 SANGAT MENDESAK..."
+  timestamp: string;
 }
 
 // ==========================================================
@@ -111,9 +112,11 @@ export interface SensorDataPoint {
 // 5. API RESPONSE WRAPPERS
 // ==========================================================
 
-export interface PredictResponseFE {
+export interface PredictResponse {
+  success: boolean;
   status: 'success' | 'error';
-  input_saved: boolean;
-  ml_result: MLResponse;
-  alert_created?: boolean;
+  message: string;
+  data: PredictionData;
+  databaseSaved: boolean;
+  alertCreated: boolean;
 }

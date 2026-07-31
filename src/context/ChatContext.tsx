@@ -19,7 +19,7 @@ interface ChatContextType {
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
-const STORAGE_KEY = "protek_chat_history";
+const STORAGE_KEY = "protek_chat_context_history";
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -63,7 +63,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: data.reply || "Maaf, saya tidak mengerti respon server.",
+        text: data.response_text || "Maaf, saya tidak mengerti respon server.",
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, botMsg]);

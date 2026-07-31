@@ -7,6 +7,8 @@ import {
   HelpCircle,
   PanelLeftClose,
   PanelLeftOpen
+  ,ClipboardList,
+  FlaskConical
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import logo from "@/assets/protek-logo.svg";
@@ -22,6 +24,8 @@ const mainNavigation = [
   { name: "Alerts", href: "/alerts", icon: AlertTriangle },
   { name: "Machines", href: "/machines", icon: Activity },
   { name: "Copilot", href: "/chat", icon: MessageSquare },
+  { name: "Tickets", href: "/tickets", icon: ClipboardList },
+  { name: "AI Evaluation", href: "/ai-evaluation", icon: FlaskConical },
 ];
 
 export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {

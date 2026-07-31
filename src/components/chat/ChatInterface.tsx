@@ -19,7 +19,7 @@ const suggestions = [
   "Kondisi mesin M-14850",
 ];
 
-const STORAGE_KEY = "protek_chat_history"; // Samakan key dengan widget agar sinkron
+const STORAGE_KEY = "protek_chat_page_history";
 
 export function ChatInterface() {
   // --- BARU: Load from LocalStorage ---
@@ -27,9 +27,11 @@ export function ChatInterface() {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        // Mapping sedikit karena struktur ID/Role di widget vs interface mungkin beda dikit
-        // Tapi logic utamanya sama: ambil JSON
-        return JSON.parse(saved);
+        try {
+          return JSON.parse(saved);
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
     }
     return [{
@@ -79,6 +81,7 @@ export function ChatInterface() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
 
     try {
       const data = await dashboardService.sendMessage(query);
@@ -86,12 +89,12 @@ export function ChatInterface() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.reply,
+        content: data.response_text,
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
 
-    } catch (error) {
+    } catch {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",

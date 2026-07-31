@@ -13,6 +13,8 @@ import Machines from "./pages/Machines";
 import Integration from "./pages/Integration";
 import MachineDetailPage from "./pages/MachineDetailPage";
 import NotFound from "./pages/NotFound";
+import Tickets from "./pages/Tickets";
+import AiEvaluation from "./pages/AiEvaluation";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/machines" element={<Machines />} />
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/tickets" element={<Tickets />} />
+          <Route path="/ai-evaluation" element={<AiEvaluation />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/machine/:asetId" element={<MachineDetailPage />} />
           <Route path="*" element={<NotFound />} />
